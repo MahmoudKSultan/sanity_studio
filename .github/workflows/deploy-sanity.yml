@@ -1,0 +1,37 @@
+name: Deploy Sanity Studio
+
+on:
+  push:
+    branches:
+      - main # Run when pushing to main branch
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install Sanity CLI
+        run: npm install -g @sanity/cli
+
+      - name: Deploy Sanity Studio
+        run: SANITY_AUTH_TOKEN=${{ secrets.SANITY_AUTH_TOKEN }} npx sanity deploy
