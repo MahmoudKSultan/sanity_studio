@@ -45,4 +45,4 @@ jobs:
           SANITY_STUDIO_HOSTNAME: ${{ secrets.SANITY_STUDIO_HOSTNAME }}
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
         run: |
-          npx sanity deploy
+          npx sanity deploy --yes
