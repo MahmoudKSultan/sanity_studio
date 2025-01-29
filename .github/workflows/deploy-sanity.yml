@@ -4,11 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Optional: Allow manual input
-    inputs:
-      dataset:
-        description: 'Dataset name (e.g., "production")'
-        required: true
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -36,10 +32,17 @@ jobs:
       - name: Install Sanity CLI
         run: npm install -g @sanity/cli
 
+      - name: Verify Environment Variables
+        run: |
+          echo "SANITY_STUDIO_PROJECT_ID=${{ secrets.SANITY_STUDIO_PROJECT_ID }}"
+          echo "SANITY_STUDIO_DATASET=${{ secrets.SANITY_STUDIO_DATASET }}"
+          echo "SANITY_STUDIO_HOSTNAME=${{ secrets.SANITY_STUDIO_HOSTNAME }}"
+
       - name: Deploy Sanity Studio
-        # env:
-        #   SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
-        #   SANITY_PROJECT_ID: ${{ secrets.SANITY_STUDIO_PROJECT_ID }}
-        #   SANITY_DATASET: production
-        #   SANITY_HOSTNAME: test-cicd-studio # Hostname from secrets
-        run: npx sanity deploy 
+        env:
+          SANITY_STUDIO_PROJECT_ID: ${{ secrets.SANITY_STUDIO_PROJECT_ID }}
+          SANITY_STUDIO_DATASET: ${{ secrets.SANITY_STUDIO_DATASET }}
+          SANITY_STUDIO_HOSTNAME: ${{ secrets.SANITY_STUDIO_HOSTNAME }}
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+        run: |
+          npx sanity deploy
