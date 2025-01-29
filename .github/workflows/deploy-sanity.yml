@@ -16,14 +16,13 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Install Sanity CLI
-        run: npm install -g @sanity/cli
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run Sanity Commands
         env:
-          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }} # Store token in GitHub Secrets
-          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }} # Your project ID
-          SANITY_DATASET: production # Your dataset name
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
         run: |
-          npx sanity init --yes --project $SANITY_PROJECT_ID --dataset $SANITY_DATASET
-          npx sanity deploy --force  # --force skips confirmation prompts
+          npx sanity init --yes --project $SANITY_PROJECT_ID --dataset production
+          npx sanity deploy --force
