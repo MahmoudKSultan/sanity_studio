@@ -25,5 +25,5 @@ jobs:
           SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }} # Your project ID
           SANITY_DATASET: production # Your dataset name
         run: |
-          sanity init --yes --project $SANITY_PROJECT_ID --dataset $SANITY_DATASET
-          sanity deploy --force  # --force skips confirmation prompts
+          npx sanity init --yes --project $SANITY_PROJECT_ID --dataset $SANITY_DATASET
+          npx sanity deploy --force  # --force skips confirmation prompts
