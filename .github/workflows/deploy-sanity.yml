@@ -1,37 +1,29 @@
-name: Deploy Sanity Studio
+name: Sanity CI/CD
 
 on:
   push:
-    branches:
-      - main # Run when pushing to main branch
-  workflow_dispatch: # Allows manual triggering
+    branches: [main]
 
 jobs:
-  deploy:
+  sanity-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
-
-      - name: Cache Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install Dependencies
-        run: npm install
+          node-version: 18.x
 
       - name: Install Sanity CLI
         run: npm install -g @sanity/cli
 
-      - name: Deploy Sanity Studio
-        run: SANITY_AUTH_TOKEN=${{ secrets.SANITY_AUTH_TOKEN }} npx sanity deploy
+      - name: Run Sanity Commands
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }} # Store token in GitHub Secrets
+          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }} # Your project ID
+          SANITY_DATASET: production # Your dataset name
+        run: |
+          sanity init --yes --project $SANITY_PROJECT_ID --dataset $SANITY_DATASET
+          sanity deploy --force  # --force skips confirmation prompts
