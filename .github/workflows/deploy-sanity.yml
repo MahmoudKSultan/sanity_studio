@@ -1,28 +1,45 @@
-name: Sanity CI/CD
+name: Deploy Sanity Studio
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+  workflow_dispatch: # Optional: Allow manual input
+    inputs:
+      dataset:
+        description: 'Dataset name (e.g., "production")'
+        required: true
 
 jobs:
-  sanity-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 18
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-      - name: Run Sanity Commands
-        env:
-          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
-          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
-        run: |
-          npx sanity init --yes --project $SANITY_PROJECT_ID --dataset production
-          npx sanity deploy --force
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install Sanity CLI
+        run: npm install -g @sanity/cli
+
+      - name: Deploy Sanity Studio
+        # env:
+        #   SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+        #   SANITY_PROJECT_ID: ${{ secrets.SANITY_STUDIO_PROJECT_ID }}
+        #   SANITY_DATASET: production
+        #   SANITY_HOSTNAME: test-cicd-studio # Hostname from secrets
+        run: npx sanity deploy 

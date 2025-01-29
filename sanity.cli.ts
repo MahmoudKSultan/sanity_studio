@@ -3,11 +3,11 @@ import {defineCliConfig} from 'sanity/cli'
 export default defineCliConfig({
   // ooakmnrv
   api: {
-    projectId: 'g7ry455f',
+    projectId: process.env.SANITY_STUDIO_PROJECT_ID,
     // projectId: 'ooakmnrv',
-    dataset: 'production',
+    dataset: process.env.SANITY_STUDIO_DATASET,
   },
-
+  studioHost: process.env.SANITY_STUDIO_HOSTNAME,
   // studioHost: 'test3-zero-waste',
   /**
    * Enable auto-updates for studios.
